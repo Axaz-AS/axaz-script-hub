@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🔥JSON Unionizer😎</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #333;
+        color: #fff;
+      }
+      #editor {
+        width: 100%;
+        height: 300px;
+        border: 1px solid #777;
+        position: relative;
+      }
+      button {
+        padding: 10px 20px;
+        margin-top: 10px;
+      }
+      #output {
+        margin-top: 20px;
+        white-space: pre-wrap;
+        background: #444;
+        padding: 10px;
+        border: 1px solid #777;
+      }
+      #copyMessage {
+        margin-left: 10px;
+        color: #0f0;
+        display: none;
+      }
+      .light-mode {
+        background-color: #fff;
+        color: #000;
+      }
+      .light-mode #editor {
+        border: 1px solid #ccc;
+      }
+      .light-mode #output {
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+      }
+      .light-mode #copyMessage {
+        color: #008000;
+      }
+      .toggle-button {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 10px;
+        background: #000;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      .toggle-button.light-mode {
+        background: #fff;
+        color: #000;
+      }
+      .norwegian-flag {
+        background-color: #ba0c2f;
+        color: #ffffff;
+      }
+      .norwegian-flag #editor {
+        border: 1px solid #ffffff;
+      }
+      .norwegian-flag #output {
+        background: #ba0c2f;
+        border: 1px solid #ffffff;
+      }
+      .norwegian-flag #copyMessage {
+        color: #ffffff;
+      }
+      .norwegian-flag .toggle-button {
+        background: #ffffff;
+        color: #ba0c2f;
+      }
+      .norwegian-flag .flag-button {
+        background: #00205b;
+        color: #ffffff;
+      }
+      .flag-button {
+        position: fixed;
+        top: 50px;
+        right: 10px;
+        padding: 5px;
+        font-size: 20px;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      #confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .norwegian-flag #confetti-canvas {
+        display: block;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.22.3/min/vs/loader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  </head>
+  <body class="dark-mode">
+    <button class="toggle-button" onclick="toggleMode()">Toggle Light/Dark</button>
+    <button class="flag-button" onclick="toggleNorwegianFlag()">🇳🇴</button>
+    <h1>🔥🥇 JSON Unionizer 😎📈</h1>
+    <div id="editor"></div>
+    <button onclick="processJson()">🤸‍♀️Unionize!❤️</button>
+    <button onclick="copyToClipboard()">Copy Result</button>
+    <span id="copyMessage">Result copied to clipboard!</span>
+    <div id="output"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <script>
+      var editor;
+
+      require.config({ paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.22.3/min/vs" } });
+      require(["vs/editor/editor.main"], function () {
+        editor = monaco.editor.create(document.getElementById("editor"), {
+          value: "",
+          language: "json",
+          theme: "vs-dark",
+        });
+
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function () {
+          processJson();
+          copyToClipboard();
+        });
+      });
+
+      function isObject(item) {
+        return item && typeof item === "object" && !Array.isArray(item);
+      }
+
+      function mergeDicts(d1, d2) {
+        if (!isObject(d1) || !isObject(d2)) {
+          throw new Error("Attempted to merge non-object types");
+        }
+        Object.keys(d2).forEach((key) => {
+          if (key in d1) {
+            if (isObject(d1[key]) && isObject(d2[key])) {
+              d1[key] = mergeDicts(d1[key], d2[key]);
+            } else if (Array.isArray(d1[key]) && Array.isArray(d2[key])) {
+              d1[key] = mergeLists(d1[key], d2[key]);
+            } else {
+              d1[key] = d2[key] !== null && d2[key] !== undefined ? d2[key] : d1[key];
+            }
+          } else {
+            d1[key] = d2[key];
+          }
+        });
+        return d1;
+      }
+
+      function mergeLists(l1, l2) {
+        const maxLength = Math.max(l1.length, l2.length);
+        let result = [];
+        for (let i = 0; i < maxLength; i++) {
+          if (i < l1.length && i < l2.length) {
+            if (isObject(l1[i]) && isObject(l2[i])) {
+              result.push(mergeDicts(l1[i], l2[i]));
+            } else {
+              result.push(l1[i] || l2[i]);
+            }
+          } else {
+            result.push(l1[i] || l2[i]);
+          }
+        }
+        return result;
+      }
+
+      function recursiveMerge(jsonData) {
+        if (Array.isArray(jsonData)) {
+          if (jsonData.length === 0) return [];
+          let result = jsonData.reduce((acc, item) => {
+            if (isObject(acc) && isObject(item)) {
+              return mergeDicts(acc, item);
+            }
+            return acc; // In case of type mismatch, prioritize first element
+          }, jsonData[0] || {});
+          return [result];
+        } else if (isObject(jsonData)) {
+          Object.keys(jsonData).forEach((key) => {
+            jsonData[key] = recursiveMerge(jsonData[key]);
+          });
+        }
+        return jsonData;
+      }
+
+      function processJson() {
+        const input = editor.getValue();
+        try {
+          const jsonData = JSON.parse(input);
+          const mergedData = recursiveMerge(jsonData);
+          document.getElementById("output").innerText = JSON.stringify(mergedData, null, 4);
+        } catch (e) {
+          document.getElementById("output").innerText = "Error: " + e.message;
+        }
+      }
+
+      function copyToClipboard() {
+        const text = document.getElementById("output").innerText;
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const copyMessage = document.getElementById("copyMessage");
+            copyMessage.style.display = "inline";
+            setTimeout(() => {
+              copyMessage.style.display = "none";
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("Failed to copy text: ", err);
+          });
+      }
+
+      function toggleMode() {
+        const body = document.body;
+        const toggleButton = document.querySelector(".toggle-button");
+        body.classList.toggle("light-mode");
+        toggleButton.classList.toggle("light-mode");
+        const theme = body.classList.contains("light-mode") ? "vs-light" : "vs-dark";
+        monaco.editor.setTheme(theme);
+      }
+
+      function toggleNorwegianFlag() {
+        const body = document.body;
+        body.classList.toggle("norwegian-flag");
+        if (body.classList.contains("norwegian-flag")) {
+          startConfetti();
+          showFlagOverlay();
+        } else {
+          stopConfetti();
+          hideFlagOverlay();
+        }
+      }
+
+      function startConfetti() {
+        const duration = 10 * 1000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ["#bb0000", "#ffffff", "#00205b"],
+          });
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ["#bb0000", "#ffffff", "#00205b"],
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        })();
+      }
+
+      function stopConfetti() {
+        confetti.reset();
+      }
+
+      function showFlagOverlay() {
+        const editorElement = document.getElementById("editor");
+        const overlay = document.createElement("div");
+        overlay.id = "flag-overlay";
+        overlay.style.position = "absolute";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.pointerEvents = "none";
+        overlay.style.backgroundImage =
+          "linear-gradient(90deg, transparent 40%, #ffffff 40%, #ffffff 50%, transparent 50%), linear-gradient(0deg, transparent 40%, #ffffff 40%, #ffffff 50%, transparent 50%)";
+        editorElement.appendChild(overlay);
+      }
+
+      function hideFlagOverlay() {
+        const overlay = document.getElementById("flag-overlay");
+        if (overlay) {
+          overlay.remove();
+        }
+      }
+    </script>
+  </body>
+</html>
