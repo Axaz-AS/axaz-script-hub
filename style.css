@@ -1,6 +1,8 @@
 body {
     font-family: 'Verdana', sans-serif;
     background-color: #f0f8ff;
+    background-image: url('assets/images/polka_dots.png');
+    background-repeat: repeat;
     color: #000;
     margin: 0;
     padding: 0;
