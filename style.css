@@ -109,9 +109,38 @@ ul li a:hover {
     padding: 10px;
     border-top: 5px solid #1e90ff;
     margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .footer p {
     font-size: 0.8em;
     margin: 0;
+    flex: 1 1 auto;
+}
+
+.footer .github-link {
+    flex: 1 1 auto;
+    text-align: right;
+    margin-left: 20px;
+}
+
+.footer a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.github-icon {
+    width: 20px;
+    height: auto;
+    margin-right: 5px;
 }
