@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boomi XML to BigQuery Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      textarea {
+        width: 100%;
+        height: 200px;
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Boomi Database profile to BigQuery Converter</h1>
+    <textarea id="xmlInput" placeholder="Paste your Boomi XML here"></textarea>
+    <button onclick="convertToBigQuery()">Convert to BigQuery</button>
+    <textarea id="bigqueryOutput" readonly placeholder="BigQuery CREATE TABLE statement will appear here"></textarea>
+
+    <script>
+      function convertToBigQuery() {
+        const xmlInput = document.getElementById("xmlInput").value;
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlInput, "text/xml");
+
+        const dbFields = xmlDoc.querySelector("DBFields");
+        if (!dbFields) {
+          alert("Invalid XML format. DBFields not found.");
+          return;
+        }
+
+        const tableName = "your_table_name"; // You might want to extract this from the XML or let the user input it
+        let createTableSQL = `CREATE TABLE \`${tableName}\` (\n`;
+
+        const fields = dbFields.querySelectorAll("DatabaseElement");
+        fields.forEach((field, index) => {
+          const name = field.getAttribute("name");
+          const dataType = field.getAttribute("dataType");
+          let bigQueryType = "";
+
+          switch (dataType.toLowerCase()) {
+            case "character":
+              bigQueryType = "STRING";
+              break;
+            case "number":
+              bigQueryType = "FLOAT64";
+              break;
+            case "datetime":
+              bigQueryType = "TIMESTAMP";
+              break;
+            default:
+              bigQueryType = "STRING"; // Default to STRING for unknown types
+          }
+
+          createTableSQL += `    ${name} ${bigQueryType}`;
+          if (index < fields.length - 1) {
+            createTableSQL += ",";
+          }
+          createTableSQL += "\n";
+        });
+
+        createTableSQL += ")";
+
+        document.getElementById("bigqueryOutput").value = DOMPurify.sanitize(createTableSQL);
+      }
+    </script>
+  </body>
+</html>
