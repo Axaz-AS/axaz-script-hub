@@ -25,7 +25,7 @@ const menuData = {
     
     let menuHTML = `
       <div class="menu-container">
-        <h2 class="menu-header">🚀 Script Nav 🚀</h2>
+        <h2 class="menu-header">🧭 Navigator 🐊</h2>
     `;
     
     // Create each category and its items
