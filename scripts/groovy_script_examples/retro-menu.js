@@ -62,7 +62,7 @@ const menuData = {
     menuHTML += `
         <div class="menu-footer">
           <p style="color: #ffff00; text-align: center; margin-top: 20px; font-size: 12px;">
-            ✨ Made with <span style="color: #ff00ff;">♥</span> in 2025 ✨
+            ✨ Made with <span style="color: #ff00ff;">♥</span> since 2024 ✨
           </p>
         </div>
       </div>
