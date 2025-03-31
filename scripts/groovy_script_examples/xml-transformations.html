@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XML Transformations - Groovy Scripts for Boomi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-okaidia.min.css" />
+    <link rel="stylesheet" href="retro-styles.css" />
+  </head>
+  <body>
+    <!-- Menu will be injected here by JavaScript -->
+
+    <div class="container">
+      <h1>🧩 XML Transformations 🧩</h1>
+
+      <div class="marquee">
+        <p>Transform your XML like a wizard with these magical Groovy scripts for Boomi! 🔮✨</p>
+      </div>
+
+      <h2>What can you do with these spells? 🧙‍♂️</h2>
+      <p>
+        These mystic scripts will help you bend XML to your will! Convert complex structures, extract nested data, and
+        manipulate XML documents with the power of Groovy. Each example includes comments to guide you through the dark
+        arts of XML transformation!
+      </p>
+
+      <!-- Example 1 -->
+      <div class="filter-section">
+        <h2 class="filter-title">🔮 Extract Values from Nested XML 🔮</h2>
+
+        <p>This script extracts values from deeply nested XML structures and creates a simplified output.</p>
+
+        <button id="copy-button-1" class="copy-button">📋 Copy This Spell 📋</button>
+      </div>
+
+      <div class="code-section">
+        <div class="ribbon">Nested XML Extractor</div>
+        <pre><code id="code-display-1" class="language-groovy">
+import java.util.Properties;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import groovy.util.XmlSlurper;
+import groovy.xml.StreamingMarkupBuilder;
+
+// Function to parse XML
+def parseXml(InputStream is) {
+    def xmlSlurper = new XmlSlurper()
+    return xmlSlurper.parse(is)
+}
+
+// Function to create XML output
+def encodeXml(xml_data){
+    def builder = new StreamingMarkupBuilder()
+    String xmlString = builder.bind {
+        mkp.yield xml_data
+    }
+    return new ByteArrayInputStream(xmlString.getBytes("UTF-8"))
+}
+
+// Process each document
+for (int i = 0; i < dataContext.getDataCount(); i++) {
+    InputStream is = dataContext.getStream(i);
+    Properties props = dataContext.getProperties(i);
+    
+    // Parse the input XML
+    def inputXml = parseXml(is)
+    
+    // Create our output structure
+    def outputXml = new groovy.xml.MarkupBuilder(new StringWriter())
+    def result = outputXml.SimplifiedData {
+        // Extract data from nested paths
+        CustomerInfo {
+            Name(inputXml.Customer.PersonalInfo.FirstName.text() + " " + 
+                 inputXml.Customer.PersonalInfo.LastName.text())
+            Email(inputXml.Customer.ContactInfo.EmailAddress.text())
+        }
+        
+        // Extract and transform product data
+        Products {
+            inputXml.Order.Items.Item.each { item ->
+                Product(id: item.@id) {
+                    Name(item.ProductName.text())
+                    Quantity(item.Quantity.text())
+                    Price(item.Price.text())
+                }
+            }
+        }
+        
+        // Calculate and add totals
+        Summary {
+            TotalItems(inputXml.Order.Items.Item.size())
+            
+            // Calculate total cost using Groovy closure
+            def totalCost = 0
+            inputXml.Order.Items.Item.each { item ->
+                totalCost += (item.Price.text() as Double) * (item.Quantity.text() as Integer)
+            }
+            TotalCost(String.format("%.2f", totalCost))
+        }
+    }
+    
+    // Convert the result to InputStream and store
+    InputStream resultStream = encodeXml(result)
+    dataContext.storeStream(resultStream, props)
+}
+        </code></pre>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="filter-section">
+        <h2 class="filter-title">🔮 XML Structure Transformation 🔮</h2>
+
+        <p>This script converts between different XML schemas, ideal for mapping between systems.</p>
+
+        <button id="copy-button-2" class="copy-button">📋 Copy This Spell 📋</button>
+      </div>
+
+      <div class="code-section">
+        <div class="ribbon">XML Schema Converter</div>
+        <pre><code id="code-display-2" class="language-groovy">
+import java.util.Properties;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import groovy.util.XmlSlurper;
+import groovy.xml.StreamingMarkupBuilder;
+
+// Parse XML helper function
+def parseXml(InputStream is) {
+    def xmlSlurper = new XmlSlurper()
+    return xmlSlurper.parse(is)
+}
+
+// Create XML output helper function
+def encodeXml(xml_data){
+    def builder = new StreamingMarkupBuilder()
+    String xmlString = builder.bind {
+        mkp.yield xml_data
+    }
+    return new ByteArrayInputStream(xmlString.getBytes("UTF-8"))
+}
+
+// Process each document
+for (int i = 0; i < dataContext.getDataCount(); i++) {
+    InputStream is = dataContext.getStream(i);
+    Properties props = dataContext.getProperties(i);
+    
+    // Parse input XML (in format from System A)
+    def systemA = parseXml(is)
+    
+    // Create writer for output XML
+    def writer = new StringWriter()
+    def builder = new groovy.xml.MarkupBuilder(writer)
+    
+    // Build output XML (in format for System B)
+    builder.SystemB {
+        // Map fields from System A to System B format
+        TransactionHeader {
+            TransactionID(systemA.Header.ID.text())
+            TransactionDate(systemA.Header.Date.text())
+            Source("BOOMI_INTEGRATION")
+        }
+        
+        Entities {
+            // For each entity in System A, transform to System B format
+            systemA.Body.Entity.each { entity ->
+                Entity(ID: entity.@id) {
+                    // Map simple fields
+                    Code(entity.EntityCode.text())
+                    Description(entity.Description.text())
+                    
+                    // Transform attributes section
+                    Attributes {
+                        // Convert each attribute from System A format to System B format
+                        entity.Attributes.Attribute.each { attr ->
+                            Attribute(name: attr.@name, dataType: mapDataType(attr.@type)) {
+                                Value(attr.Value.text())
+                            }
+                        }
+                    }
+                    
+                    // Transform relationships if they exist
+                    if (entity.Relations.Relation.size() > 0) {
+                        Relationships {
+                            entity.Relations.Relation.each { rel ->
+                                Relationship(type: rel.@type) {
+                                    TargetID(rel.Target.text())
+                                    Status(rel.Status.text())
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Create and store the output
+    InputStream outputStream = new ByteArrayInputStream(writer.toString().getBytes("UTF-8"))
+    dataContext.storeStream(outputStream, props)
+}
+
+// Helper function to map data types between systems
+def mapDataType(String systemAType) {
+    switch(systemAType.toLowerCase()) {
+        case "text": return "String"
+        case "number": return "Decimal"
+        case "date": return "DateTime"
+        default: return "String"
+    }
+}
+        </code></pre>
+      </div>
+
+      <h2 class="blink">⚠️ Casting Spells Responsibly ⚠️</h2>
+      <p>
+        Remember, with great XML power comes great responsibility! Always test your scripts in a non-production
+        environment first. These incantations are provided as-is with no warranty, express or implied.
+      </p>
+
+      <div class="marquee">
+        <p>
+          Thanks for visiting the XML Transformation chamber! May your parsing be swift and your transformations be
+          accurate! 🧙‍♂️💫
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="retro-menu.js"></script>
+
+    <script>
+      // Initialize Prism for syntax highlighting
+      Prism.highlightAll();
+
+      // Copy button functionality for example 1
+      document.getElementById("copy-button-1").addEventListener("click", function () {
+        const codeText = document.getElementById("code-display-1").textContent;
+        navigator.clipboard
+          .writeText(codeText)
+          .then(
+            function () {
+              const originalText = this.textContent;
+              this.textContent = "✅ Copied to clipboard! ✅";
+              setTimeout(() => {
+                this.textContent = originalText;
+              }, 2000);
+            }.bind(this)
+          )
+          .catch(
+            function (err) {
+              console.error("Could not copy text: ", err);
+              this.textContent = "❌ Failed to copy! ❌";
+              setTimeout(() => {
+                this.textContent = "📋 Copy This Spell 📋";
+              }, 2000);
+            }.bind(this)
+          );
+      });
+
+      // Copy button functionality for example 2
+      document.getElementById("copy-button-2").addEventListener("click", function () {
+        const codeText = document.getElementById("code-display-2").textContent;
+        navigator.clipboard
+          .writeText(codeText)
+          .then(
+            function () {
+              const originalText = this.textContent;
+              this.textContent = "✅ Copied to clipboard! ✅";
+              setTimeout(() => {
+                this.textContent = originalText;
+              }, 2000);
+            }.bind(this)
+          )
+          .catch(
+            function (err) {
+              console.error("Could not copy text: ", err);
+              this.textContent = "❌ Failed to copy! ❌";
+              setTimeout(() => {
+                this.textContent = "📋 Copy This Spell 📋";
+              }, 2000);
+            }.bind(this)
+          );
+      });
+    </script>
+  </body>
+</html>
