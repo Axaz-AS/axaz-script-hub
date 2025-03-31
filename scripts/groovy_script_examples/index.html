@@ -62,14 +62,89 @@
           transform: translate(-100%, 0);
         }
       }
+      .filter-section {
+        background-color: #000000;
+        border: 2px dashed #ff00ff;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+      .filter-title {
+        color: #ffff00;
+        text-align: center;
+        margin-top: 0;
+      }
+      .filter-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      .filter-group {
+        background-color: #000033;
+        border: 1px solid #00ffff;
+        padding: 10px;
+        border-radius: 8px;
+        flex: 1 1 200px;
+      }
+      .filter-group h3 {
+        color: #00ffff;
+        margin-top: 0;
+        text-align: center;
+      }
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .checkbox-container input[type="checkbox"],
+      .checkbox-container input[type="radio"] {
+        margin-right: 8px;
+        transform: scale(1.2);
+      }
+      .checkbox-container label {
+        color: #00ff00;
+        font-size: 14px;
+      }
+      .copy-button {
+        background-color: #00ffff;
+        color: #000000;
+        border: none;
+        padding: 10px 15px;
+        margin-top: 10px;
+        cursor: pointer;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        font-weight: bold;
+        border-radius: 5px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .copy-button:hover {
+        background-color: #ff00ff;
+      }
+      .code-section {
+        position: relative;
+      }
+      .ribbon {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: #ff00ff;
+        color: white;
+        padding: 5px 15px;
+        transform: rotate(5deg);
+        font-size: 12px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>🚀 Groovy Scripts for Boomi 🚀</h1>
+
       <div class="marquee">
         <p>Welcome to the coolest Groovy scripts collection for Boomi this side of the millennium! 🎉🎊</p>
       </div>
+
       <h2>What's this all about? 🤔</h2>
       <p>
         Greetings, fellow code wizards! 🧙‍♂️ Behold this magical collection of Groovy script examples for Boomi custom
@@ -77,95 +152,304 @@
         data. Whether you're a newbie or a seasoned pro, these examples will make your Boomi experience groovy, baby!
         Yeah!
       </p>
+
+      <!-- Filter Section -->
+      <div class="filter-section">
+        <h2 class="filter-title">🔮 Customize Your Code Snippets 🔮</h2>
+
+        <div class="filter-options">
+          <div class="filter-group">
+            <h3>Input Document Type</h3>
+            <div class="checkbox-container">
+              <input type="radio" id="input-none" name="input-type" value="none" checked />
+              <label for="input-none">None</label>
+            </div>
+            <div class="checkbox-container">
+              <input type="radio" id="input-xml" name="input-type" value="xml" />
+              <label for="input-xml">XML</label>
+            </div>
+            <div class="checkbox-container">
+              <input type="radio" id="input-json" name="input-type" value="json" />
+              <label for="input-json">JSON</label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h3>Output Document Type</h3>
+            <div class="checkbox-container">
+              <input type="radio" id="output-none" name="output-type" value="none" checked />
+              <label for="output-none">None</label>
+            </div>
+            <div class="checkbox-container">
+              <input type="radio" id="output-xml" name="output-type" value="xml" />
+              <label for="output-xml">XML</label>
+            </div>
+            <div class="checkbox-container">
+              <input type="radio" id="output-json" name="output-type" value="json" />
+              <label for="output-json">JSON</label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h3>Dynamic Process Properties</h3>
+            <div class="checkbox-container">
+              <input type="checkbox" id="dpp-read" value="dpp-read" />
+              <label for="dpp-read">Read DPP</label>
+            </div>
+            <div class="checkbox-container">
+              <input type="checkbox" id="dpp-write" value="dpp-write" />
+              <label for="dpp-write">Write DPP</label>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <h3>Dynamic Document Properties</h3>
+            <div class="checkbox-container">
+              <input type="checkbox" id="ddp-read" value="ddp-read" />
+              <label for="ddp-read">Read DDP</label>
+            </div>
+            <div class="checkbox-container">
+              <input type="checkbox" id="ddp-write" value="ddp-write" />
+              <label for="ddp-write">Write DDP</label>
+            </div>
+          </div>
+        </div>
+
+        <button id="copy-button" class="copy-button">📋 Copy Selected Code 📋</button>
+      </div>
+
       <h2 class="blink">⚠️ The Sacred Code ⚠️</h2>
-      <pre><code class="language-groovy">
-import java.util.Properties;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 
-
-// XML Handeling
-import groovy.util.XmlSlurper;
-import groovy.xml.StreamingMarkupBuilder
-
-// Read XML object from input stream
-def parseXml(InputStream is) {
-    def xmlSlurper = new XmlSlurper()
-    return xmlSlurper.parse(is)
-}
-
-// Convert XML to input stream
-def encodeXml(xml_data){
-    def builder = new StreamingMarkupBuilder()
-    String xmlString = builder.bind {
-        mkp.yield xml
-    }
-    return new ByteArrayInputStream(xmlString.getBytes("UTF-8"))
-}
-
-
-// JSON Handeling
-import groovy.json.JsonSlurper;
-import groovy.json.JsonOutput;
-
-// Read JSON object from input stream
-def parseJson(InputStream is) {
-    def jsonSlurper = new JsonSlurper()
-    return jsonSlurper.parse(is)
-}
-
-// Convert JSON to input stream
-def encodeJson(json_data) {
-    def jsonString = JsonOutput.toJson(outputJson)
-    jsonString = JsonOutput.prettyPrint(jsonString)
-    return new ByteArrayInputStream(jsonString.getBytes("UTF-8"))
-}
-
-
-//library needed to get/set dynamic process properties
-import com.boomi.execution.ExecutionUtil;
-// Get dynamic process property
-example_dpp_string = ExecutionUtil.getDynamicProcessProperty("example_input_dpp");
-// Set dynamic process property
-Boolean presist = false
-ExecutionUtil.setDynamicProcessProperty("example_output_dpp", example_dpp_string, presist);
-
-
-for (int i = 0; i < dataContext.getDataCount(); i++) {
-    InputStream is = dataContext.getStream(i);
-    Properties props = dataContext.getProperties(i);
-
-    // Get value from dynamic document property
-    String example_ddp_string = props.getProperty("document.dynamic.userdefined.example_input_ddp")
-
-    // Set dynamic document property
-    props.setProperty("document.dynamic.userdefined.example_output_ddp", example_ddp_string)
-
-    // If reading from the input stream and then passing it on
-    is.reset()
-
-    // Store the updated properties
-    dataContext.storeStream(is, props)
-}
+      <div class="code-section">
+        <div class="ribbon">AI-friendly format</div>
+        <pre><code id="code-display" class="language-groovy">
+// Your filtered code will appear here
         </code></pre>
+      </div>
+
       <h2>How to use this cosmic knowledge? 🌠</h2>
       <ol>
-        <li>Copy the code snippets you need</li>
-        <li>Paste them into your Boomi custom script component</li>
-        <li>Customize to fit your specific requirements</li>
+        <li>Select the options you need using the radio buttons and checkboxes above</li>
+        <li>Copy the filtered code</li>
+        <li>Paste it into your Boomi custom script component or provide it to your AI assistant</li>
         <li>Watch the magic happen! ✨</li>
       </ol>
+
       <p>
         Remember, with great power comes great responsibility. Use these scripts wisely, and may the force of Boomi be
         with you! 🖖
       </p>
+
       <div class="marquee">
         <p>
           Thanks for visiting! Don't forget to bookmark this page and share it with your fellow Boomi enthusiasts! 🚀🌟
         </p>
       </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+      // Code sections
+      const codeBlocks = {
+        baseImports: `import java.util.Properties;
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+`,
+        xmlImport: `import groovy.util.XmlSlurper;`,
+        xmlOutputImport: `import groovy.xml.StreamingMarkupBuilder`,
+        jsonImport: `import groovy.json.JsonSlurper;`,
+        jsonOutputImport: `import groovy.json.JsonOutput;`,
+        xmlInput: `
+// Read XML object from input stream
+def parseXml(InputStream is) {
+    def xmlSlurper = new XmlSlurper()
+    return xmlSlurper.parse(is)
+}
+`,
+        xmlOutput: `
+// Convert XML to input stream
+def encodeXml(xml_data){
+    def builder = new StreamingMarkupBuilder()
+    String xmlString = builder.bind {
+        mkp.yield xml_data
+    }
+    return new ByteArrayInputStream(xmlString.getBytes("UTF-8"))
+}
+`,
+        jsonInput: `
+// Read JSON object from input stream
+def parseJson(InputStream is) {
+    def jsonSlurper = new JsonSlurper()
+    return jsonSlurper.parse(is)
+}
+`,
+        jsonOutput: `
+// Convert JSON to input stream
+def encodeJson(json_data) {
+    def jsonString = JsonOutput.toJson(json_data)
+    jsonString = JsonOutput.prettyPrint(jsonString)
+    return new ByteArrayInputStream(jsonString.getBytes("UTF-8"))
+}
+`,
+        dppImport: `
+//library needed to get/set dynamic process properties
+import com.boomi.execution.ExecutionUtil;
+`,
+        dppRead: `
+// Get dynamic process property
+example_dpp_string = ExecutionUtil.getDynamicProcessProperty("example_input_dpp");
+`,
+        dppWrite: `
+// Set dynamic process property
+Boolean persist = false
+ExecutionUtil.setDynamicProcessProperty("example_output_dpp", example_dpp_string, persist);
+`,
+        baseLoop: `
+for (int i = 0; i < dataContext.getDataCount(); i++) {
+    InputStream is = dataContext.getStream(i);
+    Properties props = dataContext.getProperties(i);
+`,
+        ddpRead: `
+    // Get value from dynamic document property
+    String example_ddp_string = props.getProperty("document.dynamic.userdefined.example_input_ddp")
+`,
+        ddpWrite: `
+    // Set dynamic document property
+    props.setProperty("document.dynamic.userdefined.example_output_ddp", example_ddp_string)
+`,
+        loopEndWithReset: `
+    // If reading from the input stream and then passing it on
+    is.reset()
+
+    // Store the updated properties
+    dataContext.storeStream(is, props)
+}
+`,
+        loopEndWithoutReset: `
+    // Store the updated properties
+    dataContext.storeStream(is, props)
+}
+`,
+      };
+
+      // Update code display based on selected options
+      function updateCodeDisplay() {
+        let code = codeBlocks.baseImports;
+
+        // Get radio button states
+        const inputType = document.querySelector('input[name="input-type"]:checked').value;
+        const outputType = document.querySelector('input[name="output-type"]:checked').value;
+
+        // Get checkbox states
+        const isDppRead = document.getElementById("dpp-read").checked;
+        const isDppWrite = document.getElementById("dpp-write").checked;
+        const isDdpRead = document.getElementById("ddp-read").checked;
+        const isDdpWrite = document.getElementById("ddp-write").checked;
+
+        // Add imports only as needed
+        if (inputType === "xml") {
+          code += codeBlocks.xmlImport + "\n";
+        }
+        if (outputType === "xml") {
+          code += codeBlocks.xmlOutputImport + "\n";
+        }
+        if (inputType === "json") {
+          code += codeBlocks.jsonImport + "\n";
+        }
+        if (outputType === "json") {
+          code += codeBlocks.jsonOutputImport + "\n";
+        }
+
+        // Add input handling functions
+        if (inputType === "xml") {
+          code += codeBlocks.xmlInput;
+        }
+        if (inputType === "json") {
+          code += codeBlocks.jsonInput;
+        }
+
+        // Add output handling functions
+        if (outputType === "xml") {
+          code += codeBlocks.xmlOutput;
+        }
+        if (outputType === "json") {
+          code += codeBlocks.jsonOutput;
+        }
+
+        // Add DPP handling if needed
+        if (isDppRead || isDppWrite) {
+          code += codeBlocks.dppImport;
+
+          if (isDppRead) {
+            code += codeBlocks.dppRead;
+          }
+
+          if (isDppWrite) {
+            code += codeBlocks.dppWrite;
+          }
+        }
+
+        // Always add document processing loop
+        code += codeBlocks.baseLoop;
+
+        // Add DDP operations inside the loop if needed
+        if (isDdpRead) {
+          code += codeBlocks.ddpRead;
+        }
+
+        if (isDdpWrite) {
+          code += codeBlocks.ddpWrite;
+        }
+
+        // Conditionally add loop end based on input/output selections
+        const hasInput = inputType !== "none";
+        const hasOutput = outputType !== "none";
+
+        // Only include is.reset() if we have input but no output
+        if (hasInput && !hasOutput) {
+          code += codeBlocks.loopEndWithReset;
+        } else {
+          code += codeBlocks.loopEndWithoutReset;
+        }
+
+        document.getElementById("code-display").textContent = code;
+        Prism.highlightElement(document.getElementById("code-display"));
+      }
+
+      // Initialize the code display
+      updateCodeDisplay();
+
+      // Add event listeners to all inputs
+      document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((input) => {
+        input.addEventListener("change", updateCodeDisplay);
+      });
+
+      // Copy button functionality
+      document.getElementById("copy-button").addEventListener("click", function () {
+        const codeText = document.getElementById("code-display").textContent;
+        navigator.clipboard
+          .writeText(codeText)
+          .then(
+            function () {
+              const originalText = this.textContent;
+              this.textContent = "✅ Copied to clipboard! ✅";
+              setTimeout(() => {
+                this.textContent = originalText;
+              }, 2000);
+            }.bind(this)
+          )
+          .catch(
+            function (err) {
+              console.error("Could not copy text: ", err);
+              this.textContent = "❌ Failed to copy! ❌";
+              setTimeout(() => {
+                this.textContent = "📋 Copy Selected Code 📋";
+              }, 2000);
+            }.bind(this)
+          );
+      });
+    </script>
   </body>
 </html>
