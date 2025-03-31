@@ -2,27 +2,17 @@
 const menuData = {
     categories: [
       {
-        name: "🧪 Basic Examples",
+        name: "🧪 Document Processing",
         items: [
-          { title: "🔌 Data Processing", url: "index.html", active: true },
-          { title: "📁 File Operations", url: "file-operations.html", active: false },
-          { title: "🔄 Error Handling", url: "error-handling.html", active: false }
+          { title: "🔌 General Template", url: "index.html", active: true },
+          { title: "📁 PUT Request Merginator", url: "file-operations.html", active: false }
         ]
       },
       {
-        name: "🔮 Advanced Techniques",
+        name: "⚗️ Utility",
         items: [
-          { title: "🧩 XML Transformations", url: "xml-transformations.html", active: true },
-          { title: "📊 JSON Manipulations", url: "json-manipulations.html", active: false },
-          { title: "🧠 Custom Functions", url: "custom-functions.html", active: false }
-        ]
-      },
-      {
-        name: "⚡ Integration Patterns",
-        items: [
-          { title: "📨 Message Routing", url: "message-routing.html", active: false },
-          { title: "📦 Content Enrichment", url: "content-enrichment.html", active: false },
-          { title: "🔍 Data Validation", url: "data-validation.html", active: false }
+          { title: "💤 Sleep timer", url: "sleep-timer.html", active: false },
+          { title: "📄 Pageination", url: "pagination-increment.html", active: false },
         ]
       }
     ]
